@@ -9,7 +9,7 @@ namespace FloodFill
     class Block
     {
 
-        public bool CanWalkOn = false;
+        public bool CanWalkOn = true;
         public bool HasBeenVisited = false;
 
     }

@@ -48,8 +48,10 @@ namespace FloodFill
                 {
                     Block b = new Block();
 
-                    if (x != StartX && y != StartY)
-                        b.CanWalkOn = Ran.Next(5) == 0 ? true : false;
+                    b.CanWalkOn = Ran.Next(5) == 0;
+
+                    if (x == StartX && y == StartY)
+                        b.CanWalkOn = true;
                     
                     Map[x, y] = b;
                 }
@@ -61,7 +63,7 @@ namespace FloodFill
             if ((x < 0) || (x >= MapWidth)) return;
             if ((y < 0) || (y >= MapHeight)) return;
 
-            if (!Map[x, y].HasBeenVisited && !Map[x, y].CanWalkOn)
+            if (!Map[x, y].HasBeenVisited && Map[x, y].CanWalkOn)
             {
                 Console.Clear();
                 PrintVisitedMap();
