@@ -9,9 +9,14 @@ namespace MineSweeperLogic
 {
     public class MineSweeperGame
     {
-
+        
         public MineSweeperGame(int sizeX, int sizeY, int nrOfMines, IServiceBus bus)
         {
+            SizeX = sizeX;
+            SizeY = sizeY;
+            NumberOfMines = nrOfMines;
+            State = GameState.Playing;
+            //ResetBoard();
         }
 
         public int PosX { get; private set; }

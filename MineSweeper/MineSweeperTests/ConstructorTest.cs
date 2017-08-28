@@ -10,6 +10,7 @@ namespace MineSweeperTests
         [TestInitialize]
         public void Setup()
         {
+
         }
 
         [TestMethod]
