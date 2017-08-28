@@ -11,7 +11,6 @@ namespace FloodFill
 {
     class Program
     {
-
         public static Block[,] Map;
 
         public static int MapWidth;
@@ -48,10 +47,9 @@ namespace FloodFill
                 for (int y = 0; y < Map.GetLength(1); y++)
                 {
                     Block b = new Block();
-                    b.IsBomb = Ran.Next(5) == 0 ? true : false;
 
-                    if (x == StartX && y == StartY)
-                        continue;
+                    if (x != StartX && y != StartY)
+                        b.IsBomb = Ran.Next(5) == 0 ? true : false;
                     
                     Map[x, y] = b;
                 }
