@@ -9,8 +9,8 @@ namespace FloodFill
     class Block
     {
 
-        public bool IsBomb = false;
-        public bool IsVisited = false;
+        public bool CanWalkOn = false;
+        public bool HasBeenVisited = false;
 
     }
 }

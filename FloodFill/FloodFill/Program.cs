@@ -49,7 +49,7 @@ namespace FloodFill
                     Block b = new Block();
 
                     if (x != StartX && y != StartY)
-                        b.IsBomb = Ran.Next(5) == 0 ? true : false;
+                        b.CanWalkOn = Ran.Next(5) == 0 ? true : false;
                     
                     Map[x, y] = b;
                 }
@@ -61,13 +61,13 @@ namespace FloodFill
             if ((x < 0) || (x >= MapWidth)) return;
             if ((y < 0) || (y >= MapHeight)) return;
 
-            if (!Map[x, y].IsVisited && !Map[x, y].IsBomb)
+            if (!Map[x, y].HasBeenVisited && !Map[x, y].CanWalkOn)
             {
                 Console.Clear();
                 PrintVisitedMap();
                 Console.ReadLine();
 
-                Map[x, y].IsVisited = true;
+                Map[x, y].HasBeenVisited = true;
                 
                 FloodFill(x, y+1);
                 FloodFill(x, y-1);
@@ -83,7 +83,7 @@ namespace FloodFill
                 for (int y = 0; y < MapHeight; y++)
                 {
                     Block b = Map[x, y];
-                    Console.Write(b.IsBomb ? "1" : "0");
+                    Console.Write(b.CanWalkOn ? "1" : "0");
                 }
                 Console.WriteLine();
             }
@@ -96,7 +96,7 @@ namespace FloodFill
                 for (int y = 0; y < MapHeight; y++)
                 {
                     Block b = Map[x, y];
-                    Console.Write(b.IsVisited ? "1" : "0");
+                    Console.Write(b.HasBeenVisited ? "1" : "0");
                 }
                 Console.WriteLine();
             }
