@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MineSweeperLogic
+namespace FloodFill
 {
-    public enum GameState
+    class Block
     {
-        Playing,
-        Lost,
-        Won
+
+        public bool IsBomb = false;
+        public bool IsVisited = false;
+
     }
 }
