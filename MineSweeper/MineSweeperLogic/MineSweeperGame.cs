@@ -4,38 +4,22 @@ using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.XPath;
+using MineSweeperLogic;
 
 namespace MineSweeperLogic
 {
     public class MineSweeperGame
     {
-        private IServiceBus _bus;
-
-        public PositionInfo[,] GameBoard;
 
         public MineSweeperGame(int sizeX, int sizeY, int nrOfMines, IServiceBus bus)
         {
-            _bus = bus;
-
-            
-
             SizeX = sizeX;
             SizeY = sizeY;
             NumberOfMines = nrOfMines;
-            this.Bus = bus;
+            _bus = bus;
+            State = GameState.Playing;
             ResetBoard();
-
-            GameBoard = new PositionInfo[SizeX, SizeY];
-
-            //for (int i = 0; i < SizeY; i++)
-            //{
-            //    for (int j = 0; j < SizeX; j++)
-            //    {
-            //        GameBoard[i, j] = new PositionInfo(i, j, false);
-            //    }
-            //}
-
-            
         }
 
         public int PosX { get; private set; }
@@ -46,180 +30,205 @@ namespace MineSweeperLogic
 
         public int NumberOfMines { get; }
         public GameState State { get; private set; }
-        private PositionInfo[,] Map;
-        private readonly IServiceBus Bus;
-
+        private PositionInfo[,] _map;
+        private readonly IServiceBus _bus;
         
-
         public PositionInfo GetCoordinate(int x, int y)
         {
-            if (x < 0 || x > SizeX ||
-                y < 0 || y > SizeY) return null;
-            return Map[x, y];
+            return _map[x, y];
         }
 
         public void FlagCoordinate()
         {
+            PositionInfo position = GetCoordinate(PosX, PosY);
+            if (position.IsOpen)
+                return;
             
+            position.IsFlagged = !position.IsFlagged;
         }
 
         public void ClickCoordinate()
         {
-            Map[PosX, PosY].IsOpen = true;
+            PositionInfo position = GetCoordinate(PosX, PosY);
+
+            if (position.HasMine)
+            {
+                ShowAllMines();
+                State = GameState.Lost;
+                return;
+            }
+
+            if (!position.IsFlagged)
+            {
+                position.IsOpen = true;
+                OpenSuroundingPositions();
+
+                if (IsAllSafePositionsOpened())
+                {
+                    State = GameState.Won;
+                }
+            }
+
         }
 
         public void ResetBoard()
         {
-            Map = new PositionInfo[SizeX, SizeY];
-
-            for (int x = 0; x < Map.GetLength(0); x++)
-            {
-                for (int y = 0; y < Map.GetLength(1); y++)
-                {
-                    PositionInfo info = new PositionInfo();
-                    info.X = x;
-                    info.Y = y;
-
-                    Map[x, y] = info;
-                }
-            }
-
+            InitMapWithBlankPositionInfo();
             PlaceMines();
-
-            for (int x = 0; x < Map.GetLength(0); x++)
-            {
-                for (int y = 0; y < Map.GetLength(1); y++)
-                {
-                    int numberOfMines = 0;
-                    for (int x2 = x - 1; x2 < x + 1; x2++)
-                    {
-                        for (int y2 = y - 1; y2 < y + 1; y2++)
-                        {
-                            if (x2 == x && y2 == y) // ignore middle position
-                                continue;
-                            PositionInfo info = GetCoordinate(x2, y2);
-                            if (info != null && info.HasMine)
-                                numberOfMines++;
-                        }
-                    }
-                    GetCoordinate(x, y).NrOfNeighbours = numberOfMines;
-                }
-            }
+            CalculateNumberOfNeighbours();
             
             State = GameState.Playing;
         }
 
         public void DrawBoard()
         {
-            if (GetCoordinate(PosX, PosY).HasMine == true)
-            {
-                _bus.Write("X ");
-            }
-
-            for (int i = 0; i < Map.GetLongLength(0); i++)
-            {
-                for (int j = 0; j < Map.GetLongLength(1); j++)
-                {   
-                    if (Map[i, j].IsOpen == false)
-                    {
-                        if (i == PosX && j == PosY)
-                        {
-                            _bus.Write("? ", ConsoleColor.DarkCyan);
-                        }
-                        else
-                        {
-                            _bus.Write("? ");
-                        }
-
-                        if (Map[i, j].IsFlagged)
-                        {
-                            if (i == PosX && j == PosY)
-                            {
-                                _bus.Write("! ", ConsoleColor.DarkCyan);
-                            }
-                            else
-                            {
-                                _bus.Write("! ");
-                            }
-                        }
-                    }
-                    else if (Map[i, j].IsOpen)
-                    {
-                        if (Map[i, j].NrOfNeighbours <= 0)
-                        {
-                            if (i == PosX && j == PosY)
-                            {
-                                _bus.Write(". ", ConsoleColor.DarkCyan);
-                            }
-                            else
-                            {
-                                _bus.Write(". ");
-                            }
-                        }
-                        else if (Map[i, j].NrOfNeighbours >= 1)
-                        {
-                            if (i == PosX && j == PosY)
-                            {
-                                _bus.Write(Map[i, j].NrOfNeighbours + " ", ConsoleColor.DarkCyan);
-                            }
-                            else
-                            {
-                                _bus.Write(Map[i, j].NrOfNeighbours + " ");
-                            }
-                        }
-
-                        if (Map[i, j].IsFlagged)
-                        {
-                            if (i == PosX && j == PosY)
-                            {
-                                _bus.Write("! ", ConsoleColor.DarkCyan);
-                            }
-                            else
-                            {
-                                _bus.Write("! ");
-                            }
-                        }
-
-                        if (Map[i, j].HasMine)
-                        {
-                            if (i == PosX && j == PosY)
-                            {
-                                _bus.Write("X ", ConsoleColor.DarkCyan);
-                            }
-                            else
-                            {
-                                _bus.Write("X ");
-                            }
-                        }
-                    }
-                }
-                _bus.WriteLine();
-            }
         }
-
-        
 
         #region MoveCursor Methods
 
         public void MoveCursorUp()
         {
-            
+
+            if (PosY > 0)
+            {
+                PosY--;
+            }
+
         }
 
         public void MoveCursorDown()
         {
+            if (PosY < _map.GetLength(1) - 1)
+            {
+                PosY++;
+            }
+            
         }
 
         public void MoveCursorLeft()
         {
-
+            if (PosX > 0)
+            {
+                PosX--;
+            }
         }
 
         public void MoveCursorRight()
         {
+            if (PosX < _map.GetLength(0) - 1)
+            {
+                PosX++;
+            }
         }
 
         #endregion
+
+        private void ShowAllMines()
+        {
+            for (int x = 0; x < SizeX; x++)
+            {
+                for (int y = 0; y < SizeY; y++)
+                {
+                    if (_map[x, y].HasMine)
+                        _map[x, y].IsOpen = true;
+                }
+            }
+        }
+
+        private void OpenSuroundingPositions()
+        {
+            bool[,] mapIsVisited = new bool[SizeX, SizeY];
+            
+            FloodFill(mapIsVisited, PosX, PosY);
+        }
+
+        private void FloodFill(bool[,] mapIsVisited, int x, int y)
+        {
+            if ((x < 0) || (x >= SizeX)) return;
+            if ((y < 0) || (y >= SizeY)) return;
+            if (_map[x, y].HasMine || mapIsVisited[x, y]) return;
+
+            mapIsVisited[x, y] = true;
+            _map[x, y].IsOpen = true;
+
+            if (_map[x, y].NrOfNeighbours == 0)
+            {
+                FloodFill(mapIsVisited, x, y + 1);
+                FloodFill(mapIsVisited, x, y - 1);
+                FloodFill(mapIsVisited, x - 1, y);
+                FloodFill(mapIsVisited, x + 1, y);
+            }
+        }
+
+        private bool IsAllSafePositionsOpened()
+        {
+            for (int x = 0; x < SizeX; x++)
+            {
+                for(int y = 0; y < SizeY; y++)
+                {
+                    PositionInfo position = GetCoordinate(x, y);
+
+                    if (!position.IsOpen && !position.HasMine)
+                        return false;
+                }
+            }
+            return true;
+        }
+
+        private void InitMapWithBlankPositionInfo()
+        {
+            _map = new PositionInfo[SizeX, SizeY];
+
+            for (int x = 0; x < SizeX; x++)
+            {
+                for (int y = 0; y < SizeY; y++)
+                {
+                    PositionInfo info = new PositionInfo();
+                    info.X = x;
+                    info.Y = y;
+                    info.IsFlagged = false;
+                    info.IsOpen = false;
+
+                    _map[x, y] = info;
+                }
+            }
+        }
+
+        private void CalculateNumberOfNeighbours()
+        {
+            for (int x = 0; x < SizeX; x++)
+            {
+                for (int y = 0; y < SizeY; y++)
+                {
+                    GetCoordinate(x, y).NrOfNeighbours = GetNumberOfNeighbours(x, y);
+                }
+            }
+        }
+
+        private int GetNumberOfNeighbours(int x, int y)
+        {
+            int numberOfMines = 0;
+
+            // Loop through a 3x3 grid with the center being x and y
+            for (int posX = x - 1; posX <= x + 1; posX++)
+            {
+                for (int posY = y - 1; posY <= y + 1; posY++)
+                {
+
+                    if (posX == x && posY == y) // ignore middle position
+                        continue;
+
+                    if (posX < 0 || posX >= SizeX ||
+                        posY < 0 || posY >= SizeY) // is outside map
+                        continue;
+
+                    if (GetCoordinate(posX, posY).HasMine)
+                        numberOfMines++;
+                }
+            }
+
+            return numberOfMines;
+        }
 
         private void PlaceMines()
         {
@@ -227,8 +236,8 @@ namespace MineSweeperLogic
 
             while (numberOfMinesBeenPlaced < NumberOfMines)
             {
-                int x = Bus.Next(SizeX);
-                int y = Bus.Next(SizeY);
+                int x = _bus.Next(SizeX - 1);
+                int y = _bus.Next(SizeY - 1);
 
                 PositionInfo positionToPlaceMine = GetCoordinate(x, y);
 
@@ -240,7 +249,5 @@ namespace MineSweeperLogic
                 numberOfMinesBeenPlaced++;
             }
         }
-
-        
     }
 }
