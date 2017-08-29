@@ -30,7 +30,6 @@ namespace MineSweeperLogic
 
         public int NumberOfMines { get; }
         public GameState State { get; private set; }
-
         private PositionInfo[,] _map;
         private readonly IServiceBus _bus;
         
@@ -50,7 +49,16 @@ namespace MineSweeperLogic
 
         public void ClickCoordinate()
         {
+<<<<<<< HEAD
+            Map[PosX, PosY].IsOpen = true;
+        }
+
+        public void ResetBoard()
+        {
+            Map = new PositionInfo[SizeX, SizeY];
+=======
             PositionInfo position = GetCoordinate(PosX, PosY);
+>>>>>>> origin/Develop
 
             if (position.HasMine)
             {
@@ -69,6 +77,8 @@ namespace MineSweeperLogic
                     State = GameState.Won;
                 }
             }
+<<<<<<< HEAD
+=======
 
         }
 
@@ -77,19 +87,26 @@ namespace MineSweeperLogic
             InitMapWithBlankPositionInfo();
             PlaceMines();
             CalculateNumberOfNeighbours();
+>>>>>>> origin/Develop
             
             State = GameState.Playing;
         }
 
         public void DrawBoard()
         {
-            for (int x = 0; x < _map.GetLongLength(0); x++)
+<<<<<<< HEAD
+            if (GetCoordinate(PosX, PosY).HasMine == true)
             {
-                for (int y = 0; y < _map.GetLongLength(1); y++)
-                {
-                    if (_map[x, y].IsOpen == false)
+                _bus.Write("X ");
+            }
+
+            for (int i = 0; i < Map.GetLongLength(0); i++)
+            {
+                for (int j = 0; j < Map.GetLongLength(1); j++)
+                {   
+                    if (Map[i, j].IsOpen == false)
                     {
-                        if (y == PosX && x == PosY)
+                        if (i == PosX && j == PosY)
                         {
                             _bus.Write("? ", ConsoleColor.DarkCyan);
                         }
@@ -98,9 +115,9 @@ namespace MineSweeperLogic
                             _bus.Write("? ");
                         }
 
-                        if (_map[x, y].IsFlagged)
+                        if (Map[i, j].IsFlagged)
                         {
-                            if (x == PosX && y == PosY)
+                            if (i == PosX && j == PosY)
                             {
                                 _bus.Write("! ", ConsoleColor.DarkCyan);
                             }
@@ -110,11 +127,11 @@ namespace MineSweeperLogic
                             }
                         }
                     }
-                    else if (_map[x, y].IsOpen)
+                    else if (Map[i, j].IsOpen)
                     {
-                        if (_map[x, y].NrOfNeighbours <= 0)
+                        if (Map[i, j].NrOfNeighbours <= 0)
                         {
-                            if (y == PosX && x == PosY)
+                            if (i == PosX && j == PosY)
                             {
                                 _bus.Write(". ", ConsoleColor.DarkCyan);
                             }
@@ -123,21 +140,21 @@ namespace MineSweeperLogic
                                 _bus.Write(". ");
                             }
                         }
-                        else if (_map[x, y].NrOfNeighbours >= 1)
+                        else if (Map[i, j].NrOfNeighbours >= 1)
                         {
-                            if (y == PosX && x == PosY)
+                            if (i == PosX && j == PosY)
                             {
-                                _bus.Write(_map[x, y].NrOfNeighbours + " ", ConsoleColor.DarkCyan);
+                                _bus.Write(Map[i, j].NrOfNeighbours + " ", ConsoleColor.DarkCyan);
                             }
                             else
                             {
-                                _bus.Write(_map[x, y].NrOfNeighbours + " ");
+                                _bus.Write(Map[i, j].NrOfNeighbours + " ");
                             }
                         }
 
-                        if (_map[x, y].IsFlagged)
+                        if (Map[i, j].IsFlagged)
                         {
-                            if (y == PosX && x == PosY)
+                            if (i == PosX && j == PosY)
                             {
                                 _bus.Write("! ", ConsoleColor.DarkCyan);
                             }
@@ -147,9 +164,9 @@ namespace MineSweeperLogic
                             }
                         }
 
-                        if (_map[x, y].HasMine)
+                        if (Map[i, j].HasMine)
                         {
-                            if (y == PosX && x == PosY)
+                            if (i == PosX && j == PosY)
                             {
                                 _bus.Write("X ", ConsoleColor.DarkCyan);
                             }
@@ -161,7 +178,7 @@ namespace MineSweeperLogic
                     }
                 }
                 _bus.WriteLine();
-            }
+=======
         }
 
         #region MoveCursor Methods
@@ -198,6 +215,7 @@ namespace MineSweeperLogic
             if (PosX < _map.GetLength(0) - 1)
             {
                 PosX++;
+>>>>>>> origin/Develop
             }
         }
 
@@ -329,5 +347,7 @@ namespace MineSweeperLogic
                 numberOfMinesBeenPlaced++;
             }
         }
+
+        
     }
 }
