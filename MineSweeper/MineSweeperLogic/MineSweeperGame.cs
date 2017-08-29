@@ -11,28 +11,53 @@ namespace MineSweeperLogic
 {
     public class MineSweeperGame
     {
+        private IServiceBus _bus;
+
+        public PositionInfo[,] GameBoard;
 
         public MineSweeperGame(int sizeX, int sizeY, int nrOfMines, IServiceBus bus)
         {
+            _bus = bus;
+
+            
+
             SizeX = sizeX;
             SizeY = sizeY;
             NumberOfMines = nrOfMines;
             this.Bus = bus;
             State = GameState.Playing;
             ResetBoard();
+
+            GameBoard = new PositionInfo[SizeX, SizeY];
+
+            //for (int i = 0; i < SizeY; i++)
+            //{
+            //    for (int j = 0; j < SizeX; j++)
+            //    {
+            //        GameBoard[i, j] = new PositionInfo(i, j, false);
+            //    }
+            //}
+
+            
         }
 
         public int PosX { get; private set; }
         public int PosY { get; private set; }
+
         public int SizeX { get; }
         public int SizeY { get; }
+
         public int NumberOfMines { get; }
         public GameState State { get; private set; }
         private PositionInfo[,] Map;
         private readonly IServiceBus Bus;
 
+        
+
         public PositionInfo GetCoordinate(int x, int y)
         {
+            if (x < 0 || x > SizeX ||
+                y < 0 || y > SizeY) return null;
             return Map[x, y];
         }
 
@@ -138,7 +163,37 @@ namespace MineSweeperLogic
             bool[,] mapIsVisited = new bool[SizeX, SizeY];
             
             FloodFill(mapIsVisited, PosX, PosY);
+            for (int i = 0; i < SizeY; i++)
+            {
+                for (int j = 0; j < SizeX; j++)
+                {
+                    _bus.Write(" " + GameBoard[i, j] + " ");
+                }
+
+                _bus.WriteLine();
+            }
+
+            if (GetCoordinate(PosX, PosY).IsOpen == false)
+            {
+                _bus.Write("?");
+            }
+            else if (GetCoordinate(PosX, PosY).IsOpen == true)
+            {
+                _bus.Write(" ");
+            }
+
+            if (GetCoordinate(PosX, PosY).HasMine == true)
+            {
+                _bus.Write("X", ConsoleColor.DarkCyan);
+            }
+
+            if (GetCoordinate(PosX, PosY).IsFlagged == true)
+            {
+                _bus.Write("!", ConsoleColor.DarkCyan);
+            }
         }
+
+        
 
         private void FloodFill(bool[,] mapIsVisited, int x, int y)
         {
