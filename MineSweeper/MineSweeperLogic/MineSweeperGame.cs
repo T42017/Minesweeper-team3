@@ -65,18 +65,35 @@ namespace MineSweeperLogic
 
         public void MoveCursorUp()
         {
+
+            if (PosY > 0)
+            {
+                PosY--;
+            }
+
         }
 
         public void MoveCursorDown()
         {
+            if (PosY < Map.GetLength(1) - 1)
+            {
+                PosY++;
+            }
+            
         }
 
         public void MoveCursorLeft()
         {
+            if (PosX > 0)
+            {
+                PosX--;
+            }
         }
 
         public void MoveCursorRight()
         {
+            if(PosX < Map.GetLength(0) - 1)
+            PosX++;
         }
 
         #endregion
