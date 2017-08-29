@@ -66,12 +66,15 @@ namespace MineSweeperLogic
                 for (int y = 0; y < Map.GetLength(1); y++)
                 {
                     int numberOfMines = 0;
+
+                    // loop through a 3x3 grid with the center on x and y
                     for (int x2 = x - 1; x2 < x + 1; x2++)
                     {
                         for (int y2 = y - 1; y2 < y + 1; y2++)
                         {
                             if (x2 == x && y2 == y) // ignore middle position
                                 continue;
+
                             PositionInfo info = GetCoordinate(x2, y2);
                             if (info != null && info.HasMine)
                                 numberOfMines++;
