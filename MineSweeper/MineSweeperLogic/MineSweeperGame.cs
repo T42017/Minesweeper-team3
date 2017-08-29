@@ -51,18 +51,22 @@ namespace MineSweeperLogic
 
         public void MoveCursorUp()
         {
+            PosY--;
         }
 
         public void MoveCursorDown()
         {
+            PosY++;
         }
 
         public void MoveCursorLeft()
         {
+            PosX--;
         }
 
         public void MoveCursorRight()
         {
+            PosX++;
         }
 
         #endregion
