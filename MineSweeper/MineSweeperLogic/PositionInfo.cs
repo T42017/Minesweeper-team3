@@ -14,5 +14,15 @@ namespace MineSweeperLogic
         public bool HasMine { get; set; }
         public bool IsFlagged { get; set; }
         public int NrOfNeighbours { get; set; }
+
+        //public PositionInfo(int i, int j, bool b)
+        //{
+        //    X = i;
+        //    Y = j;
+        //    IsOpen = b;
+
+        //    MineSweeperGame.GameBoard[X, Y] = IsOpen;
+
+        //}
     }
 }
