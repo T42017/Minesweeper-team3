@@ -30,8 +30,8 @@ namespace MineSweeperLogic
 
         public PositionInfo GetCoordinate(int x, int y)
         {
-            if (x < 0 || x > SizeX ||
-                y < 0 || y > SizeY) return null;
+            if (x < 0 || x > SizeX - 1 ||
+                y < 0 || y > SizeY - 1) return null;
             return Map[x, y];
         }
 
@@ -68,9 +68,9 @@ namespace MineSweeperLogic
                     int numberOfMines = 0;
 
                     // loop through a 3x3 grid with the center on x and y
-                    for (int x2 = x - 1; x2 < x + 1; x2++)
+                    for (int x2 = x - 1; x2 <= x + 1; x2++)
                     {
-                        for (int y2 = y - 1; y2 < y + 1; y2++)
+                        for (int y2 = y - 1; y2 <= y + 1; y2++)
                         {
                             if (x2 == x && y2 == y) // ignore middle position
                                 continue;
