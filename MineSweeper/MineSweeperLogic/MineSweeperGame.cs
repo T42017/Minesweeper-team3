@@ -115,8 +115,10 @@ namespace MineSweeperLogic
 
         public void MoveCursorRight()
         {
-            if(PosX < _map.GetLength(0) - 1)
-            PosX++;
+            if (PosX < _map.GetLength(0) - 1)
+            {
+                PosX++;
+            }
         }
 
         #endregion
