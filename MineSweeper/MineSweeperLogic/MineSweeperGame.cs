@@ -30,8 +30,6 @@ namespace MineSweeperLogic
 
         public PositionInfo GetCoordinate(int x, int y)
         {
-            if (x < 0 || x > SizeX - 1 ||
-                y < 0 || y > SizeY - 1) return null;
             return Map[x, y];
         }
 
@@ -47,6 +45,7 @@ namespace MineSweeperLogic
         {
             Map = new PositionInfo[SizeX, SizeY];
 
+            // place PositionInfo
             for (int x = 0; x < Map.GetLength(0); x++)
             {
                 for (int y = 0; y < Map.GetLength(1); y++)
@@ -61,6 +60,7 @@ namespace MineSweeperLogic
 
             PlaceMines();
 
+            // calulate neighbours
             for (int x = 0; x < Map.GetLength(0); x++)
             {
                 for (int y = 0; y < Map.GetLength(1); y++)
@@ -68,18 +68,23 @@ namespace MineSweeperLogic
                     int numberOfMines = 0;
 
                     // loop through a 3x3 grid with the center on x and y
-                    for (int x2 = x - 1; x2 <= x + 1; x2++)
+                    for (int posX = x - 1; posX <= x + 1; posX++)
                     {
-                        for (int y2 = y - 1; y2 <= y + 1; y2++)
+                        for (int posY = y - 1; posY <= y + 1; posY++)
                         {
-                            if (x2 == x && y2 == y) // ignore middle position
+
+                            if (posX == x && posY == y) // ignore middle position
                                 continue;
 
-                            PositionInfo info = GetCoordinate(x2, y2);
-                            if (info != null && info.HasMine)
+                            if (posX < 0 || posX >= SizeX ||
+                                posY < 0 || posY >= SizeY) // is outside map
+                                continue;
+
+                            if (GetCoordinate(posX, posY).HasMine)
                                 numberOfMines++;
                         }
                     }
+
                     GetCoordinate(x, y).NrOfNeighbours = numberOfMines;
                 }
             }
@@ -117,8 +122,8 @@ namespace MineSweeperLogic
 
             while (numberOfMinesBeenPlaced < NumberOfMines)
             {
-                int x = Bus.Next(SizeX);
-                int y = Bus.Next(SizeY);
+                int x = Bus.Next(SizeX - 1);
+                int y = Bus.Next(SizeY - 1);
 
                 PositionInfo positionToPlaceMine = GetCoordinate(x, y);
 
