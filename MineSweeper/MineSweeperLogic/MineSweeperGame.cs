@@ -35,6 +35,11 @@ namespace MineSweeperLogic
 
         public void FlagCoordinate()
         {
+            PositionInfo position = GetCoordinate(PosX, PosY);
+            if (position.IsOpen)
+                return;
+            
+            position.IsFlagged = !position.IsFlagged;
         }
 
         public void ClickCoordinate()
@@ -47,6 +52,8 @@ namespace MineSweeperLogic
             PlaceMines();
             CalculateNumberOfNeighbours();
 
+
+            FlagCoordinate();
             State = GameState.Playing;
         }
 
@@ -85,6 +92,8 @@ namespace MineSweeperLogic
                     PositionInfo info = new PositionInfo();
                     info.X = x;
                     info.Y = y;
+                    info.IsFlagged = false;
+                    info.IsOpen = false;
 
                     Map[x, y] = info;
                 }

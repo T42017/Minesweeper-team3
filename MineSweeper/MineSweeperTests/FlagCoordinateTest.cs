@@ -22,7 +22,7 @@ namespace MineSweeperTests
             //Act
             _underTest.FlagCoordinate();
             var coord = _underTest.GetCoordinate(0, 0);
-
+            
             //Assert
             Assert.AreEqual(coord.IsFlagged, true);
         }
