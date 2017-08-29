@@ -99,9 +99,9 @@ namespace MineSweeperLogic
 
         private void ShowAllMines()
         {
-            for (int x = 0; x < Map.GetLength(0); x++)
+            for (int x = 0; x < SizeX; x++)
             {
-                for (int y = 0; y < Map.GetLength(1); y++)
+                for (int y = 0; y < SizeY; y++)
                 {
                     if (Map[x, y].HasMine)
                         Map[x, y].IsOpen = true;
@@ -136,9 +136,9 @@ namespace MineSweeperLogic
 
         private bool IsAllSafePositionsOpened()
         {
-            for (int x = 0; x < Map.GetLength(0); x++)
+            for (int x = 0; x < SizeX; x++)
             {
-                for(int y = 0; y < Map.GetLength(1); y++)
+                for(int y = 0; y < SizeY; y++)
                 {
                     PositionInfo position = GetCoordinate(x, y);
 
@@ -153,9 +153,9 @@ namespace MineSweeperLogic
         {
             Map = new PositionInfo[SizeX, SizeY];
 
-            for (int x = 0; x < Map.GetLength(0); x++)
+            for (int x = 0; x < SizeX; x++)
             {
-                for (int y = 0; y < Map.GetLength(1); y++)
+                for (int y = 0; y < SizeY; y++)
                 {
                     PositionInfo info = new PositionInfo();
                     info.X = x;
@@ -168,9 +168,9 @@ namespace MineSweeperLogic
 
         private void CalculateNumberOfNeighbours()
         {
-            for (int x = 0; x < Map.GetLength(0); x++)
+            for (int x = 0; x < SizeX; x++)
             {
-                for (int y = 0; y < Map.GetLength(1); y++)
+                for (int y = 0; y < SizeY; y++)
                 {
                     GetCoordinate(x, y).NrOfNeighbours = GetNumberOfNeighbours(x, y);
                 }
