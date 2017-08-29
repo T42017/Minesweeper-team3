@@ -11,15 +11,34 @@ namespace MineSweeperLogic
 {
     public class MineSweeperGame
     {
+        private IServiceBus _bus;
+
+        public PositionInfo[,] GameBoard;
 
         public MineSweeperGame(int sizeX, int sizeY, int nrOfMines, IServiceBus bus)
         {
+            _bus = bus;
+
+            
+
             SizeX = sizeX;
             SizeY = sizeY;
             NumberOfMines = nrOfMines;
-            _bus = bus;
+            this.Bus = bus;
             State = GameState.Playing;
             ResetBoard();
+
+            GameBoard = new PositionInfo[SizeX, SizeY];
+
+            //for (int i = 0; i < SizeY; i++)
+            //{
+            //    for (int j = 0; j < SizeX; j++)
+            //    {
+            //        GameBoard[i, j] = new PositionInfo(i, j, false);
+            //    }
+            //}
+
+            
         }
 
         public int PosX { get; private set; }
@@ -30,21 +49,27 @@ namespace MineSweeperLogic
 
         public int NumberOfMines { get; }
         public GameState State { get; private set; }
-        private PositionInfo[,] _map;
-        private readonly IServiceBus _bus;
+        private PositionInfo[,] Map;
+        private readonly IServiceBus Bus;
+
         
+
         public PositionInfo GetCoordinate(int x, int y)
         {
-            return _map[x, y];
+            return Map[x, y];
         }
 
         public void FlagCoordinate()
         {
+<<<<<<< HEAD
             PositionInfo position = GetCoordinate(PosX, PosY);
             if (position.IsOpen)
                 return;
             
             position.IsFlagged = !position.IsFlagged;
+=======
+            
+>>>>>>> origin/Feature-DrawBoard
         }
 
         public void ClickCoordinate()
@@ -84,23 +109,57 @@ namespace MineSweeperLogic
 
         public void DrawBoard()
         {
+            for (int i = 0; i < SizeY; i++)
+            {
+                for (int j = 0; j < SizeX; j++)
+                {
+                    _bus.Write(" " + GameBoard[i, j] + " ");
+                }
+
+                _bus.WriteLine();
+            }
+
+            if (GetCoordinate(PosX, PosY).IsOpen == false)
+            {
+                _bus.Write("?");
+            }
+            else if (GetCoordinate(PosX, PosY).IsOpen == true)
+            {
+                _bus.Write(" ");
+            }
+
+            if (GetCoordinate(PosX, PosY).HasMine == true)
+            {
+                _bus.Write("X", ConsoleColor.DarkCyan);
+            }
+
+            if (GetCoordinate(PosX, PosY).IsFlagged == true)
+            {
+                _bus.Write("!", ConsoleColor.DarkCyan);
+            }
         }
+
+        
 
         #region MoveCursor Methods
 
         public void MoveCursorUp()
         {
+<<<<<<< HEAD
 
             if (PosY > 0)
             {
                 PosY--;
             }
 
+=======
+            
+>>>>>>> origin/Feature-DrawBoard
         }
 
         public void MoveCursorDown()
         {
-            if (PosY < _map.GetLength(1) - 1)
+            if (PosY < Map.GetLength(1) - 1)
             {
                 PosY++;
             }
@@ -109,15 +168,19 @@ namespace MineSweeperLogic
 
         public void MoveCursorLeft()
         {
+<<<<<<< HEAD
             if (PosX > 0)
             {
                 PosX--;
             }
+=======
+
+>>>>>>> origin/Feature-DrawBoard
         }
 
         public void MoveCursorRight()
         {
-            if(PosX < _map.GetLength(0) - 1)
+            if(PosX < Map.GetLength(0) - 1)
             PosX++;
         }
 
@@ -129,8 +192,8 @@ namespace MineSweeperLogic
             {
                 for (int y = 0; y < SizeY; y++)
                 {
-                    if (_map[x, y].HasMine)
-                        _map[x, y].IsOpen = true;
+                    if (Map[x, y].HasMine)
+                        Map[x, y].IsOpen = true;
                 }
             }
         }
@@ -146,12 +209,12 @@ namespace MineSweeperLogic
         {
             if ((x < 0) || (x >= SizeX)) return;
             if ((y < 0) || (y >= SizeY)) return;
-            if (_map[x, y].HasMine || mapIsVisited[x, y]) return;
+            if (Map[x, y].HasMine || mapIsVisited[x, y]) return;
 
             mapIsVisited[x, y] = true;
-            _map[x, y].IsOpen = true;
+            Map[x, y].IsOpen = true;
 
-            if (_map[x, y].NrOfNeighbours <= 1)
+            if (Map[x, y].NrOfNeighbours <= 1)
             {
                 FloodFill(mapIsVisited, x, y + 1);
                 FloodFill(mapIsVisited, x, y - 1);
@@ -177,7 +240,7 @@ namespace MineSweeperLogic
 
         private void InitMapWithBlankPositionInfo()
         {
-            _map = new PositionInfo[SizeX, SizeY];
+            Map = new PositionInfo[SizeX, SizeY];
 
             for (int x = 0; x < SizeX; x++)
             {
@@ -189,7 +252,7 @@ namespace MineSweeperLogic
                     info.IsFlagged = false;
                     info.IsOpen = false;
 
-                    _map[x, y] = info;
+                    Map[x, y] = info;
                 }
             }
         }
@@ -236,8 +299,8 @@ namespace MineSweeperLogic
 
             while (numberOfMinesBeenPlaced < NumberOfMines)
             {
-                int x = _bus.Next(SizeX - 1);
-                int y = _bus.Next(SizeY - 1);
+                int x = Bus.Next(SizeX - 1);
+                int y = Bus.Next(SizeY - 1);
 
                 PositionInfo positionToPlaceMine = GetCoordinate(x, y);
 
