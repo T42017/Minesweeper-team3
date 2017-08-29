@@ -18,6 +18,7 @@ namespace MineSweeperLogic
             SizeY = sizeY;
             NumberOfMines = nrOfMines;
             this.Bus = bus;
+            State = GameState.Playing;
             ResetBoard();
         }
 
@@ -45,20 +46,22 @@ namespace MineSweeperLogic
 
             if (position.HasMine)
             {
+                ShowAllMines();
                 State = GameState.Lost;
                 return;
             }
 
-            if (!DoesMapHaveUnOpenedPositions())
+            if (!position.IsFlagged)
             {
-                State = GameState.Won;
-                return;
+                position.IsOpen = true;
+                OpenSuroundingPositions();
+
+                if (IsAllSafePositionsOpened())
+                {
+                    State = GameState.Won;
+                }
             }
 
-            if (!position.IsFlagged)
-                position.IsOpen = true;
-
-            //OpenSuroundingPositions(PosX, PosY);
         }
 
         public void ResetBoard()
@@ -94,32 +97,56 @@ namespace MineSweeperLogic
 
         #endregion
 
-        private void OpenSuroundingPositions(int x, int y)
+        private void ShowAllMines()
+        {
+            for (int x = 0; x < Map.GetLength(0); x++)
+            {
+                for (int y = 0; y < Map.GetLength(1); y++)
+                {
+                    if (Map[x, y].HasMine)
+                        Map[x, y].IsOpen = true;
+                }
+            }
+        }
+
+        private void OpenSuroundingPositions()
         {
             bool[,] mapIsVisited = new bool[SizeX, SizeY];
-
-            FloodFill(mapIsVisited, x, y);
+            
+            FloodFill(mapIsVisited, PosX, PosY);
         }
 
         private void FloodFill(bool[,] mapIsVisited, int x, int y)
         {
-            if (mapIsVisited[x, y])
-                return;
+            if ((x < 0) || (x >= SizeX)) return;
+            if ((y < 0) || (y >= SizeY)) return;
+            if (Map[x, y].HasMine || mapIsVisited[x, y]) return;
+
+            mapIsVisited[x, y] = true;
+            Map[x, y].IsOpen = true;
+
+            if (Map[x, y].NrOfNeighbours <= 1)
+            {
+                FloodFill(mapIsVisited, x, y + 1);
+                FloodFill(mapIsVisited, x, y - 1);
+                FloodFill(mapIsVisited, x - 1, y);
+                FloodFill(mapIsVisited, x + 1, y);
+            }
         }
 
-        private bool DoesMapHaveUnOpenedPositions()
+        private bool IsAllSafePositionsOpened()
         {
             for (int x = 0; x < Map.GetLength(0); x++)
             {
-                for(int y = 0; y < Map.GetLength(0); y++)
+                for(int y = 0; y < Map.GetLength(1); y++)
                 {
                     PositionInfo position = GetCoordinate(x, y);
 
-                    if (!position.HasMine && !position.IsOpen)
-                        return true;
+                    if (!position.IsOpen && !position.HasMine)
+                        return false;
                 }
             }
-            return false;
+            return true;
         }
 
         private void InitMapWithBlankPositionInfo()
