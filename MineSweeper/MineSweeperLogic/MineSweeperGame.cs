@@ -43,51 +43,9 @@ namespace MineSweeperLogic
 
         public void ResetBoard()
         {
-            Map = new PositionInfo[SizeX, SizeY];
-
-            // place PositionInfo
-            for (int x = 0; x < Map.GetLength(0); x++)
-            {
-                for (int y = 0; y < Map.GetLength(1); y++)
-                {
-                    PositionInfo info = new PositionInfo();
-                    info.X = x;
-                    info.Y = y;
-
-                    Map[x, y] = info;
-                }
-            }
-
+            InitMapWithBlankPositionInfo();
             PlaceMines();
-
-            // calulate neighbours
-            for (int x = 0; x < Map.GetLength(0); x++)
-            {
-                for (int y = 0; y < Map.GetLength(1); y++)
-                {
-                    int numberOfMines = 0;
-
-                    // loop through a 3x3 grid with the center on x and y
-                    for (int posX = x - 1; posX <= x + 1; posX++)
-                    {
-                        for (int posY = y - 1; posY <= y + 1; posY++)
-                        {
-
-                            if (posX == x && posY == y) // ignore middle position
-                                continue;
-
-                            if (posX < 0 || posX >= SizeX ||
-                                posY < 0 || posY >= SizeY) // is outside map
-                                continue;
-
-                            if (GetCoordinate(posX, posY).HasMine)
-                                numberOfMines++;
-                        }
-                    }
-
-                    GetCoordinate(x, y).NrOfNeighbours = numberOfMines;
-                }
-            }
+            CalculateNumberOfNeighbours();
 
             State = GameState.Playing;
         }
@@ -115,6 +73,54 @@ namespace MineSweeperLogic
         }
 
         #endregion
+
+        private void InitMapWithBlankPositionInfo()
+        {
+            Map = new PositionInfo[SizeX, SizeY];
+
+            for (int x = 0; x < Map.GetLength(0); x++)
+            {
+                for (int y = 0; y < Map.GetLength(1); y++)
+                {
+                    PositionInfo info = new PositionInfo();
+                    info.X = x;
+                    info.Y = y;
+
+                    Map[x, y] = info;
+                }
+            }
+        }
+
+        private void CalculateNumberOfNeighbours()
+        {
+            for (int x = 0; x < Map.GetLength(0); x++)
+            {
+                for (int y = 0; y < Map.GetLength(1); y++)
+                {
+                    int numberOfMines = 0;
+
+                    // loop through a 3x3 grid with the center on x and y
+                    for (int posX = x - 1; posX <= x + 1; posX++)
+                    {
+                        for (int posY = y - 1; posY <= y + 1; posY++)
+                        {
+
+                            if (posX == x && posY == y) // ignore middle position
+                                continue;
+
+                            if (posX < 0 || posX >= SizeX ||
+                                posY < 0 || posY >= SizeY) // is outside map
+                                continue;
+
+                            if (GetCoordinate(posX, posY).HasMine)
+                                numberOfMines++;
+                        }
+                    }
+
+                    GetCoordinate(x, y).NrOfNeighbours = numberOfMines;
+                }
+            }
+        }
 
         private void PlaceMines()
         {
