@@ -76,9 +76,7 @@ namespace MineSweeperLogic
             InitMapWithBlankPositionInfo();
             PlaceMines();
             CalculateNumberOfNeighbours();
-
-
-            FlagCoordinate();
+            
             State = GameState.Playing;
         }
 
@@ -151,7 +149,7 @@ namespace MineSweeperLogic
             mapIsVisited[x, y] = true;
             _map[x, y].IsOpen = true;
 
-            if (_map[x, y].NrOfNeighbours <= 1)
+            if (_map[x, y].NrOfNeighbours == 0)
             {
                 FloodFill(mapIsVisited, x, y + 1);
                 FloodFill(mapIsVisited, x, y - 1);
