@@ -56,10 +56,9 @@ namespace MineSweeperLogic
             {
                 ShowAllMines();
                 State = GameState.Lost;
-                return;
-            }
 
-            if (!position.IsFlagged)
+            }
+            else if (!position.IsFlagged)
             {
                 position.IsOpen = true;
                 OpenSuroundingPositions();
@@ -83,11 +82,11 @@ namespace MineSweeperLogic
 
         public void DrawBoard()
         {
-            for (int y = 0; y < SizeY; y++)
+            for (var y = 0; y < SizeY; y++)
             {
-                for (int x = 0; x < SizeX; x++)
+                for (var x = 0; x < SizeX; x++)
                 {
-                    char charToDraw = '?';
+                    var charToDraw = '?';
 
                     if (_map[x, y].IsFlagged)
                     {
@@ -100,7 +99,11 @@ namespace MineSweeperLogic
                         if (_map[x, y].HasMine)
                             charToDraw = 'X';
                     }
-                    _bus.Write(charToDraw.ToString(), PosX == x && PosY == y ? ConsoleColor.Blue : ConsoleColor.Black);
+
+                    if (PosX == x && PosY == y)
+                        _bus.Write(charToDraw.ToString() + " ", ConsoleColor.DarkCyan);
+                    else
+                        _bus.Write(charToDraw.ToString() + " ");
                 }
                 _bus.WriteLine();
             }
