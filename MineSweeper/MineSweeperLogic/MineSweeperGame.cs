@@ -83,82 +83,24 @@ namespace MineSweeperLogic
 
         public void DrawBoard()
         {
-            for (int x = 0; x < _map.GetLongLength(0); x++)
+            for (int y = 0; y < SizeY; y++)
             {
-                for (int y = 0; y < _map.GetLongLength(1); y++)
+                for (int x = 0; x < SizeX; x++)
                 {
-                    if (_map[x, y].IsOpen == false)
-                    {
-                        if (y == PosX && x == PosY)
-                        {
-                            _bus.Write("? ", ConsoleColor.DarkCyan);
-                        }
-                        else
-                        {
-                            _bus.Write("? ");
-                        }
+                    char charToDraw = '?';
 
-                        if (_map[x, y].IsFlagged)
-                        {
-                            if (x == PosX && y == PosY)
-                            {
-                                _bus.Write("! ", ConsoleColor.DarkCyan);
-                            }
-                            else
-                            {
-                                _bus.Write("! ");
-                            }
-                        }
+                    if (_map[x, y].IsFlagged)
+                    {
+                            charToDraw = '!';
                     }
                     else if (_map[x, y].IsOpen)
                     {
-                        if (_map[x, y].NrOfNeighbours <= 0)
-                        {
-                            if (y == PosX && x == PosY)
-                            {
-                                _bus.Write(". ", ConsoleColor.DarkCyan);
-                            }
-                            else
-                            {
-                                _bus.Write(". ");
-                            }
-                        }
-                        else if (_map[x, y].NrOfNeighbours >= 1)
-                        {
-                            if (y == PosX && x == PosY)
-                            {
-                                _bus.Write(_map[x, y].NrOfNeighbours + " ", ConsoleColor.DarkCyan);
-                            }
-                            else
-                            {
-                                _bus.Write(_map[x, y].NrOfNeighbours + " ");
-                            }
-                        }
-
-                        if (_map[x, y].IsFlagged)
-                        {
-                            if (y == PosX && x == PosY)
-                            {
-                                _bus.Write("! ", ConsoleColor.DarkCyan);
-                            }
-                            else
-                            {
-                                _bus.Write("! ");
-                            }
-                        }
+                        charToDraw = _map[x, y].NrOfNeighbours == 0 ? '.' : char.Parse(_map[x, y].NrOfNeighbours + "");
 
                         if (_map[x, y].HasMine)
-                        {
-                            if (y == PosX && x == PosY)
-                            {
-                                _bus.Write("X ", ConsoleColor.DarkCyan);
-                            }
-                            else
-                            {
-                                _bus.Write("X ");
-                            }
-                        }
+                            charToDraw = 'X';
                     }
+                    _bus.Write(charToDraw.ToString(), PosX == x && PosY == y ? ConsoleColor.Blue : ConsoleColor.Black);
                 }
                 _bus.WriteLine();
             }
