@@ -88,16 +88,16 @@ namespace MineSweeperLogic
                 {
                     var charToDraw = '?';
 
-                    if (_map[x, y].IsFlagged)
-                    {
-                            charToDraw = '!';
-                    }
-                    else if (_map[x, y].IsOpen)
+                    if (_map[x, y].IsOpen)
                     {
                         charToDraw = _map[x, y].NrOfNeighbours == 0 ? '.' : char.Parse(_map[x, y].NrOfNeighbours + "");
 
                         if (_map[x, y].HasMine)
                             charToDraw = 'X';
+                    }
+                    else if (_map[x, y].IsFlagged)
+                    {
+                        charToDraw = '!';
                     }
 
                     if (PosX == x && PosY == y)
